@@ -1,0 +1,61 @@
+components:
+  schemas:
+    Message:
+      type: "object"
+      properties:
+        user_id:
+          type: "integer"
+          format: "int64"
+          description: "ID of the user sending the message"
+        message:
+          type: "string"
+          description: "Content of the message"
+      required:
+        - user_id
+        - message
+        
+tags:
+  name: Chat
+  description: API чата
+paths:
+  /send-message:
+    post:
+      tags: [Chat]
+      summary: "Send a message"
+      description: "Endpoint for sending a message in the chat."
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Message data"
+          required: true
+          schema:
+            $ref: "#/definitions/Message"
+      responses:
+        201:
+          description: "Message sent successfully"
+        400:
+          description: "Invalid input"
+        500:
+          description: "Server error"
+
+  /chat-history:
+    get:
+      tags: [Chat]
+      summary: "Retrieve chat history"
+      description: "Endpoint to retrieve the chat history."
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Chat history retrieved successfully"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Message"
+        500:
+          description: "Server error"
+

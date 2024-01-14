@@ -1,0 +1,198 @@
+components:
+  schemas:
+    Ticket:
+      type: object
+      required:
+        - summary
+        - priority
+        - content
+      properties:
+        id:
+          type: integer
+          description: Автогенерируемый id тикета
+        summary:
+          type: string
+          description: Краткая информация о тикете
+        content:
+          type: string
+          description: Основное содержимое тикета
+        priority:
+          type: string
+          description: Приоритет тикета
+        status:
+          type: string
+          description: Статус тикета (Created при создании)
+        create_date:
+          type: string
+          format: date
+          description: Автоматически генерируемая дата добавления тикета
+        update_date:
+          type: string
+          format: date
+          description: Автоматически генерируемая дата изменения билета
+        from:
+          type: string
+          description: Автор тикета
+        answ:
+          type: string
+          description: Ответ админа на тикет
+      example:
+        id: 1
+        summary: Мой компьютер завис
+        content: Компьютер завис и не реагирует, памагити!!!!
+        priority: LOW
+        status: Created
+        create_date: 2023-10-24T13:11:20.000Z
+        update_date: 2023-10-24T14:16:34.000Z
+        from: John Doe
+        answ: Перезагрузите ПК
+
+
+tags:
+  name: Tickets
+  description: API управления тикетами
+/ticket:
+  post:
+    summary: Создание нового тикета
+    tags: [Tickets]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              summary:
+                type: string
+              content:
+                type: string
+              priority:
+                type: string
+              from:
+                type: string
+            required:
+              - summary
+              - priority
+              - content
+              - from
+    responses:
+      200:
+        description: Созданный тикет
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Ticket"
+      500:
+        description: Ошибка сервера
+/ticket/all:
+  get:
+    summary: Получить все тикеты
+    tags: [Tickets]
+    responses:
+      200:
+        description: Ответ в виде массива всех тикетов
+        contens:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Ticket"
+      500:
+        description: Ошибка сервера
+/ticket/{id}:
+  get:
+    summary: Получить тикет по id
+    tags: [Tickets]
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: id тикета
+    responses:
+      200:
+        description: Ответ в виде тикета с выбранным id
+        contens:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Ticket"
+      404:
+        description: Тикет не найден
+  put:
+    summary: Обновить тикет по id
+    tags: [Tickets]
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: id тикета
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+              answ:
+                type: string
+            required:
+              - status
+              - answ
+    responses:
+      200:
+        description: Тикет успешно обновлен
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Ticket"
+      404:
+        description: Тикет не найден
+      500:
+        description: Что-то пошло не так
+  delete:
+    summary: Удалить тикет по id
+    tags: [Tickets]
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: id тикета
+
+    responses:
+      200:
+        description: Тикет успешно удалён
+      404:
+        description: Тикет не найден
+/ticket/user/{username}:
+  get:
+    tags: [Tickets]
+    summary: Получить все тикеты конкретного пользователя
+    description: По юзернейму пользователя получает все тикеты этого пользователя.
+    parameters:
+      - in: path
+        name: username
+        required: true
+        description: Юзернейм пользователя
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Successfully retrieved user information
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: "#/components/schemas/Ticket"
+      '401':
+        description: Unauthorized access
+      '403':
+        description: Forbidden - User not allowed to access the data
+      '404':
+        description: User not found
+      '500':
+        description: Internal server error
